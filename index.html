@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artistic Impression</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background-color: #0a0a0a;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .title {
+            position: absolute;
+            color: white;
+            font-size: 50px;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+    <div class="title">Artistic Impression Lab</div>
+
+    <script>
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+
+        // Particle constructor
+        function Particle(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = Math.random() * 3 - 1.5;
+            this.speedY = Math.random() * 3 - 1.5;
+            this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        }
+
+        // Update and draw each particle
+        Particle.prototype.update = function () {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            this.size *= 0.96;
+
+            if (this.size <= 0.5) {
+                particles.splice(particles.indexOf(this), 1);
+            }
+        };
+
+        Particle.prototype.draw = function () {
+            ctx.fillStyle = this.color;
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        };
+
+        // Mouse event listener
+        canvas.addEventListener('mousemove', (e) => {
+            const xPos = e.x;
+            const yPos = e.y;
+            for (let i = 0; i < 5; i++) {
+                particles.push(new Particle(xPos, yPos));
+            }
+        });
+
+        // Animate particles
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+    </script>
+
+</body>
+
+</html>
